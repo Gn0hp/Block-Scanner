@@ -1,42 +1,27 @@
 package main
 
 import (
-	"BlockScanner/internal/entities"
 	"BlockScanner/internal/services"
 	database "BlockScanner/internal/services/database/mysql"
 	"BlockScanner/internal/services/log"
 	"BlockScanner/internal/services/report/telegram"
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
 	"logur.dev/logur"
 )
 
-type MigrateService struct {
+type BlockScanner struct {
 	services.DefaultService
-	logger logur.LoggerFacade
-	gormDB *gorm.DB
+	Context context.Context
+	logger  logur.LoggerFacade
+	gormDB  *gorm.DB
 }
 
-func main() {
-	migrateService := MigrateService{}
-	migrateService.Init()
-
-	tables := []interface{}{
-		entities.Transaction{},
-	}
-	err := migrateService.gormDB.AutoMigrate(tables...)
-	if err != nil {
-		msg := fmt.Sprintf("Error while migrating tables: %v", err)
-		migrateService.logger.Error(msg)
-		telegram.ReportErrorMessageTelegram(msg)
-		return
-	}
-	migrateService.logger.Info("Seed completed")
-}
-
-func (s *MigrateService) Init() {
+func (s *BlockScanner) Init() {
 	s.DefaultService.Init()
 	var (
 		logCf = log.Config{}
@@ -49,16 +34,26 @@ func (s *MigrateService) Init() {
 
 	logger := log.NewLogger(logCf)
 	log.SetStandaloneLogger(logger)
+
 	if dbCf.Params == nil {
 		dbCf.Params = make(map[string]string)
 	}
 	gormDb, err := database.NewConnector(dbCf)
 	if err != nil {
-		telegram.ReportErrorMessageTelegram(fmt.Sprintf("Error while create new connector to database: %v", err))
+		msg := fmt.Sprintf("Error while connecting to database: %v", err)
+		logrus.Error(msg)
+		telegram.ReportErrorMessageTelegram(msg)
 		panic(err)
 	}
 
-	s.gormDB = gormDb
 	s.logger = logger
+	s.gormDB = gormDb
+}
 
+func ConnectDB() *gorm.DB {
+	service := BlockScanner{
+		Context: context.Background(),
+	}
+	service.Init()
+	return service.gormDB
 }

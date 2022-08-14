@@ -2,7 +2,7 @@
 host="localhost"
 port=3306
 user=""
-pass="@"
+pass=""
 dbname=""
 
 [log]
@@ -11,5 +11,23 @@ level="info"
 noColor="false"
 
 [block_scanner]
-    [ticker]
-    [api]
+    network="testnet"
+[ticker]
+    interval=2
+[api]
+    source_url=""
+    token=""
+    mainnetUrl="https://api.bscscan.com/api"
+    testnetUrl="https://api-testnet.bscscan.com/api"
+[scanner_params]
+    module="block"
+    action="getblockreward"
+    blockNo=12380347
+    apiKey=""
+    txHash=""
+    timestamp=0
+    closest=""
+    sort=""
+    fromBlock=0
+    toBlock=0
+    address=""

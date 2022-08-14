@@ -3,8 +3,11 @@ module BlockScanner
 go 1.16
 
 require (
+	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible // indirect
+	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/viper v1.12.0
+	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	gorm.io/driver/mysql v1.3.5
 	gorm.io/gorm v1.23.8
 	logur.dev/adapter/logrus v0.5.0

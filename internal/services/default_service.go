@@ -1,6 +1,8 @@
-package service
+package services
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 var initiated = false
 
